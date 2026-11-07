@@ -1,0 +1,25 @@
+---
+- name: Update installed packages on Linux
+  hosts: linux
+  become: true
+  gather_facts: true
+  serial: 1
+
+  tasks:
+    - name: Update all packages on Debian-family systems
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: Update all packages on RedHat-family systems
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+      when: ansible_os_family == "RedHat"
+
+    - name: Report unsupported operating system family
+      ansible.builtin.debug:
+        msg: "No package update task is defined for {{ ansible_os_family }}."
+      when: ansible_os_family not in ["Debian", "RedHat"]

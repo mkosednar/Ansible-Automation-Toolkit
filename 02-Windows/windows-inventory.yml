@@ -1,0 +1,16 @@
+---
+- name: Collect Windows system inventory
+  hosts: windows
+  gather_facts: true
+
+  tasks:
+    - name: Display a concise Windows host inventory
+      ansible.builtin.debug:
+        msg:
+          computer_name: "{{ ansible_hostname | default(inventory_hostname) }}"
+          operating_system: "{{ ansible_distribution | default('unknown') }}"
+          version: "{{ ansible_distribution_version | default('unknown') }}"
+          architecture: "{{ ansible_architecture | default('unknown') }}"
+          processor_count: "{{ ansible_processor_vcpus | default('unknown') }}"
+          memory_mb: "{{ ansible_memtotal_mb | default('unknown') }}"
+          ipv4_addresses: "{{ ansible_ip_addresses | default([]) }}"

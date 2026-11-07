@@ -1,0 +1,24 @@
+---
+- name: Ensure a local automation account exists
+  hosts: linux
+  become: true
+  gather_facts: false
+
+  vars:
+    managed_username: automation-operator
+    managed_groups: []
+
+  tasks:
+    - name: Validate the requested username
+      ansible.builtin.assert:
+        that:
+          - managed_username is match('^[a-z_][a-z0-9_-]*[$]?$')
+        fail_msg: "managed_username contains unsupported characters."
+
+    - name: Ensure the local account exists
+      ansible.builtin.user:
+        name: "{{ managed_username }}"
+        state: present
+        create_home: true
+        groups: "{{ managed_groups | join(',') if managed_groups | length > 0 else omit }}"
+        append: true

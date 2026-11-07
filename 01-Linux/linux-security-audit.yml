@@ -1,0 +1,35 @@
+---
+- name: Audit selected Linux security settings
+  hosts: linux
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Read SSH daemon configuration
+      ansible.builtin.slurp:
+        src: /etc/ssh/sshd_config
+      register: sshd_config_file
+      failed_when: false
+      changed_when: false
+
+    - name: Display selected SSH settings
+      ansible.builtin.debug:
+        msg:
+          host: "{{ inventory_hostname }}"
+          sshd_config_readable: "{{ sshd_config_file.content is defined }}"
+          ssh_root_login_directives: >-
+            {{
+              (sshd_config_file.content | default('') | b64decode)
+              .splitlines()
+              | select('match', '^\s*PermitRootLogin\s+')
+              | list
+            }}
+          ssh_password_authentication_directives: >-
+            {{
+              (sshd_config_file.content | default('') | b64decode)
+              .splitlines()
+              | select('match', '^\s*PasswordAuthentication\s+')
+              | list
+            }}
+          os_family: "{{ ansible_os_family }}"
+          uptime_seconds: "{{ ansible_uptime_seconds | default('unknown') }}"

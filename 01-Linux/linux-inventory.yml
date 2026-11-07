@@ -1,0 +1,17 @@
+---
+- name: Collect Linux system inventory
+  hosts: linux
+  gather_facts: true
+  become: false
+
+  tasks:
+    - name: Display a concise host inventory
+      ansible.builtin.debug:
+        msg:
+          hostname: "{{ ansible_hostname }}"
+          distribution: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
+          kernel: "{{ ansible_kernel }}"
+          architecture: "{{ ansible_architecture }}"
+          processor_count: "{{ ansible_processor_vcpus | default('unknown') }}"
+          memory_mb: "{{ ansible_memtotal_mb | default('unknown') }}"
+          default_ipv4: "{{ ansible_default_ipv4.address | default('unknown') }}"
