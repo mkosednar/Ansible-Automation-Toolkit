@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Include YAML files in GitHub language statistics
+*.yml linguist-detectable
+*.yaml linguist-detectable
